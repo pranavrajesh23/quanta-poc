@@ -42,12 +42,14 @@ function App() {
   const [apiData, setApiData] = useState<ApiResponse | null>(null)
   const [chartData, setChartData] = useState<ChartData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [salesData, setSalesData] = useState<{columns: string[], rows: any[]} | null>(null)
 
   useEffect(() => {
     // Fetch both hello message and chart data
     Promise.all([
       fetch('/api/hello').then(response => response.json()),
-      fetch('/api/data').then(response => response.json())
+      fetch('/api/data').then(response => response.json()),
+      fetch('/api/sales-sample').then(r => r.json()).then(setSalesData)
     ])
       .then(([helloData, dataResponse]) => {
         setApiData(helloData)
@@ -123,6 +125,22 @@ function App() {
             {chartData && (
               <div className="chart-container">
                 <Scatter data={scatterData} options={chartOptions} />
+              </div>
+            )}
+
+            {salesData && (
+              <div className="sales-table">
+                <h2>Sample: sales_transactions</h2>
+                <table>
+                  <thead>
+                    <tr>{salesData.columns.map(c => <th key={c}>{c}</th>)}</tr>
+                  </thead>
+                  <tbody>
+                    {salesData.rows.map((row, i) => (
+                      <tr key={i}>{salesData.columns.map(c => <td key={c}>{String(row[c])}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

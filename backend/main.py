@@ -4,6 +4,17 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
+from databricks import sql
+from databricks.sdk.core import Config
+
+cfg = Config()
+
+def get_connection():
+    return sql.connect(
+        server_hostname=cfg.host,
+        http_path=f"/sql/1.0/warehouses/{os.getenv('DATABRICKS_WAREHOUSE_ID')}",
+        credentials_provider=lambda: cfg.authenticate,
+    )
 # --- Logging Setup ---
 logging.basicConfig(
     level=logging.INFO,
@@ -34,6 +45,17 @@ async def get_data():
         "x_title": "Apps",
         "y_title": "Fun with data"
     }
+
+@app.get("/api/sales-sample")
+async def sales_sample():
+    query = "SELECT * FROM samples.bakehouse.sales_transactions LIMIT 20"
+    with get_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+            data = [dict(zip(columns, row)) for row in rows]
+    return {"columns": columns, "rows": data}
 
 # --- Static Files Setup ---
 static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
