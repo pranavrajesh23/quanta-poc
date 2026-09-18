@@ -4,3 +4,4 @@ python-multipart==0.0.9
 aiofiles==23.2.1 
 databricks-sql-connector
 databricks-sdk
+python-dotenv
