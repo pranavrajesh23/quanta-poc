@@ -12,12 +12,35 @@ from databricks.sdk.core import Config
 
 cfg = Config()
 
-def get_connection():
+def get_connection(user_token: str):
     return sql.connect(
         server_hostname=cfg.host,
         http_path=f"/sql/1.0/warehouses/{os.getenv('DATABRICKS_WAREHOUSE_ID')}",
-        credentials_provider=lambda: cfg.authenticate,
+        access_token=user_token,
     )
+
+def resolve_user_token(request: Request) -> str:
+    """
+    Returns the signed-in user's own access token (OBO), forwarded by
+    Databricks' app gateway in production. Locally, that header doesn't
+    exist, so we fall back to a personal token from .env -- but only if
+    LOCAL_DEV is explicitly set, so this can never silently activate in
+    a deployed environment.
+    """
+    user_token = request.headers.get("x-forwarded-access-token")
+
+    if not user_token:
+        if os.getenv("LOCAL_DEV") == "true":
+            user_token = os.getenv("DATABRICKS_TOKEN")
+            logger.info("LOCAL_DEV active — using DATABRICKS_TOKEN from .env instead of OBO header")
+        else:
+            raise HTTPException(status_code=401, detail="Missing user authorization token")
+
+    if not user_token:
+        raise HTTPException(status_code=401, detail="No valid Databricks token available")
+
+    return user_token
+
 # --- Logging Setup ---
 logging.basicConfig(
     level=logging.INFO,
@@ -25,34 +48,21 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Simple FastAPI + React App")
+app = FastAPI(title="Quanta Bakehouse Dashboard")
 
 # --- API Routes ---
-@app.get("/api/hello")
-async def hello():
-    logger.info("Accessed /api/hello")
-    return {"message": "Hello from FastAPI!"}
-
 @app.get("/api/health")
 async def health_check():
     logger.info("Health check at /api/health")
     return {"status": "healthy"}
 
-@app.get("/api/data")
-async def get_data():
-    logger.info("Data requested at /api/data")
-    data = [{"x": x, "y": 2 ** x} for x in range(30)]
-    return {
-        "data": data,
-        "title": "Hello world!",
-        "x_title": "Apps",
-        "y_title": "Fun with data"
-    }
-
 @app.get("/api/sales-sample")
-async def sales_sample():
-    query = "SELECT * FROM samples.bakehouse.sales_transactions LIMIT 20"
-    with get_connection() as connection:
+async def sales_sample(request: Request):
+    logger.info("Sales sample requested at /api/sales-sample")
+    user_token = resolve_user_token(request)
+
+    query = "SELECT * FROM samples.bakehouse.sales_transactions LIMIT 500"
+    with get_connection(user_token) as connection:
         with connection.cursor() as cursor:
             cursor.execute(query)
             columns = [col[0] for col in cursor.description]

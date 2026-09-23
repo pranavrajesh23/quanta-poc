@@ -1,9 +1,8 @@
-// components/charts/MixedChart.tsx — bar + line combined (e.g. actual vs. target)
+// MixedChart.tsx
 import { Chart } from 'react-chartjs-2'
+import { cartesianChartOptions } from './chartOptions'
 
-type MixedChartProps = { labels: string[]; barValues: number[]; lineValues: number[] }
-
-export function MixedChartWidget({ labels, barValues, lineValues }: MixedChartProps) {
+export function MixedChartWidget({ labels, barValues, lineValues }: { labels: string[]; barValues: number[]; lineValues: number[] }) {
   const data = {
     labels,
     datasets: [
@@ -11,5 +10,5 @@ export function MixedChartWidget({ labels, barValues, lineValues }: MixedChartPr
       { type: 'line' as const, label: 'Target', data: lineValues, borderColor: '#FF5630' },
     ],
   }
-  return <Chart type="bar" data={data} />
+  return <Chart type="bar" data={data} options={cartesianChartOptions} />
 }

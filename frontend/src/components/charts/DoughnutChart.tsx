@@ -1,9 +1,8 @@
-// components/charts/DoughnutChart.tsx
+// DoughnutChart.tsx
 import { Doughnut } from 'react-chartjs-2'
+import { radialChartOptions } from './chartOptions'
 
-type DoughnutChartProps = { labels: string[]; values: number[] }
-
-export function DoughnutChartWidget({ labels, values }: DoughnutChartProps) {
+export function DoughnutChartWidget({ labels, values }: { labels: string[]; values: number[] }) {
   const data = { labels, datasets: [{ data: values, backgroundColor: ['#4C9AFF', '#36B37E', '#FFAB00', '#FF5630'] }] }
-  return <Doughnut data={data} />
+  return <Doughnut data={data} options={radialChartOptions} />
 }

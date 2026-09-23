@@ -1,0 +1,13 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
+  grid-auto-flow: dense;
+  gap: 12px;
+  padding: 16px;
+  justify-content: start;
+  align-items: start;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}

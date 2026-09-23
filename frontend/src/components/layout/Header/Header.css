@@ -1,0 +1,28 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 16px;
+  background: #10151f;
+  flex-shrink: 0;
+}
+
+.app-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #4C9AFF;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.app-title {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}

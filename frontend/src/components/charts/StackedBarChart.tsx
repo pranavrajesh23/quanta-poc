@@ -1,10 +1,9 @@
-// components/charts/StackedBarChart.tsx
+// StackedBarChart.tsx
 import { Bar } from 'react-chartjs-2'
+import { cartesianChartOptions } from './chartOptions'
 
-type StackedBarChartProps = { labels: string[]; series: { label: string; values: number[]; color: string }[] }
-
-export function StackedBarChartWidget({ labels, series }: StackedBarChartProps) {
+export function StackedBarChartWidget({ labels, series }: { labels: string[]; series: { label: string; values: number[]; color: string }[] }) {
   const data = { labels, datasets: series.map(s => ({ label: s.label, data: s.values, backgroundColor: s.color })) }
-  const options = { scales: { x: { stacked: true }, y: { stacked: true } } }
+  const options = { ...cartesianChartOptions, scales: { x: { stacked: true }, y: { stacked: true } } }
   return <Bar data={data} options={options} />
 }
