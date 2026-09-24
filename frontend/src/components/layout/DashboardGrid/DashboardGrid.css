@@ -1,0 +1,13 @@
+.dashboard-grid-container {
+  width: 100%;
+}
+
+.dashboard-grid-dnd {
+  padding: 4px 16px 16px 16px;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: #4C9AFF !important;
+  opacity: 0.15;
+  border-radius: 10px;
+}

@@ -1,24 +1,13 @@
 import { useSalesData } from '../../hooks/useSalesData'
 import { groupSumBy } from '../../utils/aggregate'
 import { useFilters } from '../../context/FilterContext/FilterContext'
-import { ChartCard } from '../../components/charts/ChartCard/ChartCard'
-import { StatCard } from '../../components/charts/StatCard/StatCard'
 import { BarChartWidget } from '../../components/charts/BarChart'
 import { PieChartWidget } from '../../components/charts/PieChart'
 import { FilterBar } from '../../components/filters/FilterBar/FilterBar'
 import { DataTable } from '../../components/tables/DataTable/DataTable'
-import { DashboardGrid } from '../../components/layout/DashboardGrid/DashboardGrid'
-import '../styles/Day2Dashboard.css'
+import '../styles/Day3Dashboard.css'
 
-const defaultLayout = [
-  { i: 'stat-rows', x: 0, y: 0, w: 3, h: 2 },
-  { i: 'stat-distinct', x: 3, y: 0, w: 3, h: 2 },
-  { i: 'bar-chart', x: 6, y: 0, w: 3, h: 8 },
-  { i: 'pie-chart', x: 9, y: 0, w: 3, h: 8 },
-  { i: 'table', x: 0, y: 2, w: 6, h: 10 },
-]
-
-export function Day2Dashboard() {
+export function Day3Dashboard() {
   const { data, loading, error } = useSalesData()
   const { selectedYear, selectedProducts } = useFilters()
 
@@ -44,36 +33,38 @@ export function Day2Dashboard() {
   return (
     <>
       <FilterBar years={years} products={products} />
-      <h2 className="day2-title">Day 2 — Live Bakehouse Data</h2>
+      <h2 className="d3-title">Day 3 — Fixed Layout</h2>
 
-      <DashboardGrid storageKey="day2-dashboard-layout" defaultLayout={defaultLayout}>
-        <div key="stat-rows">
-          <StatCard label="Rows (Filtered)" value={filteredRows.length} />
+      <div className="d3-grid">
+        <div className="d3-cell d3-stat1">
+          <p className="d3-stat-label">Rows (Filtered)</p>
+          <p className="d3-stat-value">{filteredRows.length}</p>
         </div>
 
-        <div key="stat-distinct">
-          <StatCard label={`Distinct ${GROUP_COLUMN}`} value={grouped.labels.length} />
+        <div className="d3-cell d3-stat2">
+          <p className="d3-stat-label">Distinct {GROUP_COLUMN}</p>
+          <p className="d3-stat-value">{grouped.labels.length}</p>
         </div>
 
-        <div key="bar-chart">
-          <ChartCard title={`${VALUE_COLUMN} by ${GROUP_COLUMN} (Bar)`}>
+        <div className="d3-cell d3-bar">
+          <h3 className="d3-cell-title">{VALUE_COLUMN} by {GROUP_COLUMN} (Bar)</h3>
+          <div className="d3-chart-body">
             <BarChartWidget labels={grouped.labels} values={grouped.values} label={VALUE_COLUMN} />
-          </ChartCard>
-        </div>
-
-        <div key="pie-chart">
-          <ChartCard title={`${VALUE_COLUMN} by ${GROUP_COLUMN} (Pie)`}>
-            <PieChartWidget labels={grouped.labels} values={grouped.values} />
-          </ChartCard>
-        </div>
-
-        <div key="table">
-          <div className="chart-card">
-            <div className="drag-handle"><h3>All Sample Rows ({filteredRows.length})</h3></div>
-            <DataTable columns={data.columns} rows={filteredRows} />
           </div>
         </div>
-      </DashboardGrid>
+
+        <div className="d3-cell d3-pie">
+          <h3 className="d3-cell-title">{VALUE_COLUMN} by {GROUP_COLUMN} (Pie)</h3>
+          <div className="d3-chart-body">
+            <PieChartWidget labels={grouped.labels} values={grouped.values} />
+          </div>
+        </div>
+
+        <div className="d3-cell d3-table">
+          <h3 className="d3-cell-title">All Sample Rows ({filteredRows.length})</h3>
+          <DataTable columns={data.columns} rows={filteredRows} />
+        </div>
+      </div>
     </>
   )
 }

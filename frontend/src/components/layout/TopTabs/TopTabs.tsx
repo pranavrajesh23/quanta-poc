@@ -3,7 +3,8 @@ import './TopTabs.css'
 
 const pages = [
   { path: '/day1', label: 'Overview' },
-  { path: '/day2', label: 'Bakehouse Live' },
+  { path: '/day2', label: 'Bakehouse Live (Draggable)' },
+  { path: '/day3', label: 'Bakehouse Live (Fixed)' },
 ]
 
 export function TopTabs() {
